@@ -1,11 +1,17 @@
 package arenadata.application.interactors;
 
 import arenadata.application._input.FetchAndStoreQuoteUseCase;
+import arenadata.application._input.ManageSchedulerUseCase;
 import arenadata.application._input.StartUseCase;
 import arenadata.application.config.ApplicationConfig;
 import arenadata.common.models.Interactor;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.lang.System.Logger;
 
@@ -16,12 +22,12 @@ import java.lang.System.Logger;
 public class StartInteractor extends Interactor implements StartUseCase {
     private static final Logger logger = System.getLogger(StartInteractor.class.getName());
     private final ApplicationConfig config;
-    private final ScheduledExecutorService scheduledExecutorService;
+    private final ManageSchedulerUseCase manageSchedulerUseCase;
     private final FetchAndStoreQuoteUseCase fetchAndStoreQuoteUseCase;
 
-    public StartInteractor(ApplicationConfig config, ScheduledExecutorService scheduledExecutorService, FetchAndStoreQuoteUseCase fetchAndStoreQuoteUseCase) {
+    public StartInteractor(ApplicationConfig config, ManageSchedulerUseCase manageSchedulerUseCase, FetchAndStoreQuoteUseCase fetchAndStoreQuoteUseCase) {
         this.config = config;
-        this.scheduledExecutorService = scheduledExecutorService;
+        this.manageSchedulerUseCase = manageSchedulerUseCase;
         this.fetchAndStoreQuoteUseCase = fetchAndStoreQuoteUseCase;
     }
 
@@ -31,8 +37,8 @@ public class StartInteractor extends Interactor implements StartUseCase {
      */
     @Override
     public void start() {
-        logger.log(Logger.Level.INFO, "Start scheduler task: {0}. Configuration: Period: {1} {2}", FetchAndStoreQuoteUseCase.class.getName(), this.config.schedulerPeriodInMilliseconds(),TimeUnit.MICROSECONDS);
-        scheduledExecutorService.scheduleAtFixedRate(fetchAndStoreQuoteUseCase,0, this.config.schedulerPeriodInMilliseconds(),TimeUnit.MILLISECONDS);
+        logger.log(Logger.Level.INFO, "Start scheduler task: {0}. Configuration: Period: {1} {2}", FetchAndStoreQuoteUseCase.class.getName(), this.config.taskPeriodInMilli(),TimeUnit.MICROSECONDS);
+        manageSchedulerUseCase.schedule(FetchAndStoreQuoteUseCase.class, fetchAndStoreQuoteUseCase, this.config.taskPeriodInMilli());
     }
 
 }

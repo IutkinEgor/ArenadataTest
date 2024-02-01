@@ -1,6 +1,7 @@
 package arenadata.bootstrap;
 
 import arenadata.application._input.FetchAndStoreQuoteUseCase;
+import arenadata.application._input.ManageSchedulerUseCase;
 import arenadata.application._input.StartUseCase;
 import arenadata.application._input.StopUseCase;
 import arenadata.application._output.LoadCryptoDataproviderPort;
@@ -8,6 +9,7 @@ import arenadata.application._output.LoadCryptoPersistencePort;
 import arenadata.application._output.StoreCryptoPersistencePort;
 import arenadata.application.config.ApplicationConfig;
 import arenadata.application.interactors.FetchAndStoreQuoteInteractor;
+import arenadata.application.interactors.ManageSchedulerInteractor;
 import arenadata.application.interactors.StartInteractor;
 import arenadata.application.interactors.StopInteractor;
 import arenadata.bootstrap.config.ApplicationConfigResolver;
@@ -29,7 +31,6 @@ import java.lang.System.Logger;
 import java.net.http.HttpClient;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * The main class of the application responsible for initializing and bootstrapping the application components.
@@ -47,7 +48,6 @@ public class Main {
             shutdownHookInit();
             propertiesInit(args);
             configInit();
-            schedulerInit();
             httpClientInit();
             applicationPortInit();
             applicationUseCaseInit();
@@ -87,14 +87,6 @@ public class Main {
         application.addBean(DataProviderConfig.class,dataProviderConfig);
     }
     /**
-     * Initializes the scheduler component of the application.
-     */
-    private static void schedulerInit(){
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
-
-        application.addBean(ScheduledExecutorService.class,scheduledExecutorService);
-    }
-    /**
      * Initializes the HTTP client component of the application.
      */
     private static void httpClientInit(){
@@ -124,19 +116,23 @@ public class Main {
      * Initializes use case components of the application.
      */
     private static void applicationUseCaseInit(){
+        application.addBean(ManageSchedulerUseCase.class,new ManageSchedulerInteractor(Executors.newScheduledThreadPool(2)));
+
         application.addBean(FetchAndStoreQuoteUseCase.class,new FetchAndStoreQuoteInteractor(
+                application.getBean(ApplicationConfig.class),
+                application.getBean(ManageSchedulerUseCase.class),
                 application.getBean(LoadCryptoDataproviderPort.class),
                 application.getBean(StoreCryptoPersistencePort.class)
         ));
 
         application.addBean(StartUseCase.class,new StartInteractor(
                 application.getBean(ApplicationConfig.class),
-                application.getBean(ScheduledExecutorService.class),
+                application.getBean(ManageSchedulerUseCase.class),
                 application.getBean(FetchAndStoreQuoteUseCase.class)
         ));
 
         application.addBean(StopUseCase.class, new StopInteractor(
-                application.getBean(ScheduledExecutorService.class)));
+                application.getBean(ManageSchedulerUseCase.class)));
     }
 
 

@@ -1,5 +1,6 @@
 package arenadata.application.interactors;
 
+import arenadata.application._input.ManageSchedulerUseCase;
 import arenadata.application._input.StopUseCase;
 import arenadata.common.models.Interactor;
 
@@ -12,15 +13,15 @@ import java.util.concurrent.ScheduledExecutorService;
 public class StopInteractor extends Interactor implements StopUseCase {
 
     private static final Logger logger = System.getLogger(StartInteractor.class.getName());
-    private final ScheduledExecutorService scheduledExecutorService;
+    private final ManageSchedulerUseCase manageSchedulerUseCase;
 
-    public StopInteractor(ScheduledExecutorService scheduledExecutorService) {
-        this.scheduledExecutorService = scheduledExecutorService;
+    public StopInteractor(ManageSchedulerUseCase manageSchedulerUseCase) {
+        this.manageSchedulerUseCase = manageSchedulerUseCase;
     }
 
     @Override
     public void stop() {
         logger.log(Logger.Level.INFO, "Scheduler shutdown.");
-        this.scheduledExecutorService.shutdown();
+        this.manageSchedulerUseCase.shutdown();
     }
 }

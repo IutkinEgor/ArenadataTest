@@ -10,8 +10,10 @@ import arenadata.persistence.exceptions.LoadCryptoPersistenceException;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 
 import java.util.Optional;
+import java.lang.System.Logger;
 
 public class LoadCryptoPersistenceService implements LoadCryptoPersistencePort {
+    private final static Logger logger = System.getLogger(LoadCryptoPersistencePort.class.getName());
     private final PersistenceConfig config;
     private final PersistenceClient client;
 
@@ -30,7 +32,8 @@ public class LoadCryptoPersistenceService implements LoadCryptoPersistencePort {
             );
             return response.found() ? Optional.ofNullable(response.source()) : Optional.empty();
         } catch (Exception e){
-            throw new LoadCryptoPersistenceException(id);
+            logger.log(Logger.Level.ERROR, "Error occurred while extracting CryptoCurrency from persistent storage. Cryptocurrency id: " + id);
+            throw new LoadCryptoPersistenceException(e.getMessage());
         }
     }
 }

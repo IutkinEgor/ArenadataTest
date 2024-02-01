@@ -15,15 +15,21 @@ public class ApplicationConfigTest {
     void createValidConfig() {
 
         long periodInMilliseconds = 10000L;
+        long pauseInMilliseconds = 10000L;
+        ApplicationConfig config = new ApplicationConfig(periodInMilliseconds,pauseInMilliseconds);
 
-        ApplicationConfig config = new ApplicationConfig(periodInMilliseconds);
-
-        assertEquals(periodInMilliseconds, config.schedulerPeriodInMilliseconds());
+        assertEquals(periodInMilliseconds, config.taskPauseInMilli());
     }
 
     @ParameterizedTest
     @ValueSource(longs = { 0L, -1000L })
     void createConfigWithInvalidPeriod(long invalidPeriod) {
-        assertThrows(ApplicationConfigValidationException.class, () -> new ApplicationConfig(invalidPeriod));
+        assertThrows(ApplicationConfigValidationException.class, () -> new ApplicationConfig(invalidPeriod, 10000L));
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = { 0L, -1000L })
+    void createConfigWithInvalidPause(long invalidPause) {
+        assertThrows(ApplicationConfigValidationException.class, () -> new ApplicationConfig(10000L, invalidPause));
     }
 }

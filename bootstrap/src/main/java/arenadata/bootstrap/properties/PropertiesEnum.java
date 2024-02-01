@@ -1,7 +1,8 @@
 package arenadata.bootstrap.properties;
 
 public enum PropertiesEnum {
-    SCHEDULER_PERIOD_IN_MILLISECONDS("scheduler.periodInMilliseconds", "SCHEDULER_PERIOD_IN_MILLISECONDS"),
+    SCHEDULER_TASK_PERIOD_IN_MILLISECONDS("scheduler.task.periodInMilliseconds", "SCHEDULER_TASK_PERIOD_IN_MILLISECONDS"),
+    SCHEDULER_TASK_PAUSE_IN_MILLISECONDS("scheduler.task.pauseInMilliseconds", "SCHEDULER_TASK_PAUSE_IN_MILLISECONDS"),
     DATAPROVIDER_DOMAIN("dataprovider.domain","DATAPROVIDER_DOMAIN"),
     DATAPROVIDER_PATH("dataprovider.path","DATAPROVIDER_PATH"),
     DATAPROVIDER_API_HEADER("dataprovider.api.header","DATA_PROVIDER_API_HEADER"),

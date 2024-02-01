@@ -51,7 +51,13 @@ public class StoreCryptoPersistenceService implements StoreCryptoPersistencePort
                 this.client.getInstance().index(request);
             }
         } catch (Exception e){
-            throw new PersistenceException("Exception during storing cryptocurrency. Message: " + e.getMessage());
+            logger.log(Logger.Level.ERROR,"Exception during storing cryptocurrency.");
+
+            logger.log(Logger.Level.INFO, "Persistence client connection check.");
+
+            client.verifyConnection();
+
+            throw new PersistenceException(e.getMessage());
         }
     }
 

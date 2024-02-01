@@ -31,8 +31,8 @@ public class PersistenceClientImpl implements PersistenceClient {
         this.restClient = buildRestClient(this.config);
         this.elcTransport = buildElcTransport(this.restClient);
         this.elcClient = buildElcClient(this.elcTransport);
-        verifyConnection(this.elcClient);
-        createIndexIfNotExist(this.config, this.elcClient);
+        verifyConnection();
+        createIndexIfNotExist();
     }
 
     private RestClient buildRestClient(PersistenceConfig config){
@@ -64,12 +64,11 @@ public class PersistenceClientImpl implements PersistenceClient {
      * Verifies the connection to the Elasticsearch node using the provided ElasticsearchClient.
      * Throws PersistenceConnectionException in case of connection issues.
      *
-     * @param client The ElasticsearchClient to verify the connection.
      * @throws PersistenceConnectionException If there is an issue verifying the connection.
      */
-    private void verifyConnection(ElasticsearchClient client) throws PersistenceConnectionException {
+    public void verifyConnection() throws PersistenceConnectionException {
         try {
-            InfoResponse infoResponse = client.info();
+            InfoResponse infoResponse = this.elcClient.info();
             logger.log(System.Logger.Level.INFO, "Elasticsearch cluster connection verified. Cluster info: " + infoResponse.toString());
         } catch (Exception e) {
             logger.log(System.Logger.Level.ERROR, "Error occurred during retrieval of cluster information. " +
@@ -78,12 +77,12 @@ public class PersistenceClientImpl implements PersistenceClient {
         }
     }
 
-    private void createIndexIfNotExist(PersistenceConfig config, ElasticsearchClient client){
+    private void createIndexIfNotExist(){
         try {
-            BooleanResponse isExist = client.indices().exists(c -> c.index(config.indexName()));
+            BooleanResponse isExist = this.elcClient.indices().exists(c -> c.index(this.config.indexName()));
 
             if(!isExist.value()){
-                client.indices().create(c -> c.index(config.indexName()));
+                this.elcClient.indices().create(c -> c.index(this.config.indexName()));
             }
         } catch (Exception e){
             throw new PersistenceException("Exception during creating index with given name. Name: " + config.indexName() +". Message: " + e.getMessage());
