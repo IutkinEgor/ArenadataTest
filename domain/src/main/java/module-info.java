@@ -3,4 +3,5 @@ module domain {
 
     exports arenadata.domain.aggregate;
     exports arenadata.domain.valueObject;
+
 }

@@ -33,6 +33,7 @@ public class FetchAndStoreQuoteInteractor extends Interactor implements FetchAnd
             Collection<CryptoCurrency> cryptoCurrency = this.loadCryptoDataproviderPort.get();
             storeCryptoPersistencePort.store(cryptoCurrency);
         } catch (Exception e){
+            logger.log(Logger.Level.ERROR,"Error acquired while fetching data from data provider and store to persistence storage. Message: " + e.getMessage());
             onRequestFailure(e);
         }
     }

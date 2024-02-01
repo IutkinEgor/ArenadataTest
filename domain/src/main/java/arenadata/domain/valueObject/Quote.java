@@ -14,16 +14,12 @@ import java.util.Objects;
  */
 public record Quote(LocalDateTime date, Double price) implements Comparable<Quote>, Serializable {
 
-    public Quote {
-        validate();
-    }
-
     /**
      * Validates the cryptocurrency fields.
      *
      * @throws ValidationException if any of the fields are invalid.
      */
-    public void validate() throws ValidationException {
+    public Quote {
         validateDate(date);
         validatePrice(price);
     }

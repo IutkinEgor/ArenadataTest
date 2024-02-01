@@ -1,10 +1,7 @@
 package arenadata.bootstrap.properties;
 
-import arenadata.bootstrap.exceptions.LoadPropertiesException;
-
-import java.io.InputStream;
-import java.util.Optional;
 import java.lang.System.Logger;
+import java.util.Optional;
 import java.util.Properties;
 
 public class EnvPropertiesResolver implements PropertiesResolver {

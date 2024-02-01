@@ -22,16 +22,12 @@ public record CryptoCurrency(
         String symbol,
         SortedSet<Quote> quoteHistory)  implements Comparable<CryptoCurrency>, Serializable {
 
-    public CryptoCurrency{
-        validate();
-    }
-
     /**
      * Validates the cryptocurrency fields.
      *
      * @throws ValidationException if any of the fields are invalid.
      */
-    public void validate() throws ValidationException {
+    public CryptoCurrency{
         validateId(id);
         validateName(name);
         validateSymbol(symbol);
@@ -57,8 +53,8 @@ public record CryptoCurrency(
     }
 
     private void validateQuoteHistory(SortedSet<Quote> quoteHistory) {
-        if (quoteHistory == null || quoteHistory.isEmpty()) {
-            throw new ValidationException("Cryptocurrency quote history cannot be null or empty.");
+        if (quoteHistory == null) {
+            throw new ValidationException("Cryptocurrency quote history cannot be null.");
         }
     }
 

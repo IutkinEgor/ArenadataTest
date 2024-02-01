@@ -41,4 +41,4 @@ build/
 *.properties
 
 # Unignore application.properties
-!application.properties
+# !application.properties
