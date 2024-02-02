@@ -12,7 +12,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.lang.System.Logger;
 
-
+/**
+ * Service implementation for binding response data from the data provider to CryptoCurrency objects.
+ */
 public class CryptoBinderService implements CryptoBinder {
     private final Logger logger = System.getLogger(CryptoBinderService.class.getName());
     private final DateTimeFormatter formatter;
@@ -22,7 +24,13 @@ public class CryptoBinderService implements CryptoBinder {
         this.formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         this.mapper = new ObjectMapper();
     }
-
+    /**
+     * Binds the provided response body to a collection of CryptoCurrency objects.
+     *
+     * @param responseBody The response body containing cryptocurrency data.
+     * @return A collection of CryptoCurrency objects parsed from the response body.
+     * @throws ResponseBindingException If there is an issue binding the response to CryptoCurrency objects.
+     */
     @Override
     public Collection<CryptoCurrency> bind(String responseBody) throws ResponseBindingException {
         try {
@@ -42,7 +50,12 @@ public class CryptoBinderService implements CryptoBinder {
         }
     }
 
-
+    /**
+     * Extracts a CryptoCurrency object from a JsonNode representing cryptocurrency data.
+     *
+     * @param node The JsonNode containing cryptocurrency data.
+     * @return A CryptoCurrency object parsed from the JsonNode.
+     */
     private CryptoCurrency extractCryptoCurrency(JsonNode node){
         Quote quote = new Quote(
                 LocalDateTime.parse(node.path("quote").path("USD").path("last_updated").asText(), formatter),

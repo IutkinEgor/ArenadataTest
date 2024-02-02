@@ -7,6 +7,7 @@ import arenadata.bootstrap.properties.PropertiesResolver;
 import arenadata.dataprovider.config.DataProviderConfig;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 /**
@@ -31,6 +32,6 @@ public class DataProviderConfigResolver implements ConfigResolver<DataProviderCo
             throw new LoadConfigException("\"Failed to bind dataprovider properties to '" + DataProviderConfig.class.getSimpleName()  + "' object due to compatibility issue. Check environment variables or properties file.\";");
         }
 
-        return new DataProviderConfig(domain.get(), path.get(), apiHeader.get(), Arrays.stream(apiKeys.get().split(",")).collect(Collectors.toSet()),Integer.parseInt(requestTimout.get()));
+        return new DataProviderConfig(domain.get(), path.get(), apiHeader.get(), new LinkedList<>(Arrays.stream(apiKeys.get().split(",")).collect(Collectors.toList())),Integer.parseInt(requestTimout.get()));
     }
 }
