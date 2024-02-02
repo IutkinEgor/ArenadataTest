@@ -6,14 +6,8 @@ import arenadata.application._input.StartUseCase;
 import arenadata.application.config.ApplicationConfig;
 import arenadata.common.models.Interactor;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.lang.System.Logger;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Implementation of the {@link StartUseCase} interface responsible for starting a scheduler task
@@ -40,5 +34,4 @@ public class StartInteractor extends Interactor implements StartUseCase {
         logger.log(Logger.Level.INFO, "Start scheduler task: {0}. Configuration: Period: {1} {2}", FetchAndStoreQuoteUseCase.class.getName(), this.config.taskPeriodInMilli(),TimeUnit.MICROSECONDS);
         manageSchedulerUseCase.schedule(FetchAndStoreQuoteUseCase.class, fetchAndStoreQuoteUseCase, this.config.taskPeriodInMilli());
     }
-
 }
