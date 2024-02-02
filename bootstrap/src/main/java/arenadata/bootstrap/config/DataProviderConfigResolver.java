@@ -1,5 +1,6 @@
 package arenadata.bootstrap.config;
 
+import arenadata.application.config.ApplicationConfig;
 import arenadata.bootstrap.exceptions.LoadConfigException;
 import arenadata.bootstrap.properties.PropertiesEnum;
 import arenadata.bootstrap.properties.PropertiesResolver;
@@ -8,8 +9,15 @@ import arenadata.dataprovider.config.DataProviderConfig;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+/**
+ * A {@link ConfigResolver} implementation for resolving data provider configuration.
+ */
 public class DataProviderConfigResolver implements ConfigResolver<DataProviderConfig> {
+    /**
+     *
+     * @param propertiesResolver collection of properties
+     * @return {@link DataProviderConfig} configuration for data provider module
+     */
     @Override
     public DataProviderConfig resolve(PropertiesResolver propertiesResolver) {
 

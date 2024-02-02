@@ -6,8 +6,15 @@ import arenadata.bootstrap.properties.PropertiesEnum;
 import arenadata.bootstrap.properties.PropertiesResolver;
 
 import java.util.Optional;
-
+/**
+ * A {@link ConfigResolver} implementation for resolving application config.
+ */
 public class ApplicationConfigResolver implements ConfigResolver<ApplicationConfig> {
+    /**
+     *
+     * @param propertiesResolver collection of properties
+     * @return {@link ApplicationConfig} configuration for application module
+     */
     @Override
     public ApplicationConfig resolve(PropertiesResolver propertiesResolver) {
         Optional<String> periodInMilli = propertiesResolver.getProperties(PropertiesEnum.SCHEDULER_TASK_PERIOD_IN_MILLISECONDS);

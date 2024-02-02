@@ -1,5 +1,10 @@
 package arenadata.bootstrap.properties;
 
+/**
+ * Enum representing configuration properties for the application.
+ * Each enum constant includes keys for retrieving values from configuration files
+ * and corresponding environment variable names for flexibility in configuration.
+ */
 public enum PropertiesEnum {
     SCHEDULER_TASK_PERIOD_IN_MILLISECONDS("scheduler.task.periodInMilliseconds", "SCHEDULER_TASK_PERIOD_IN_MILLISECONDS"),
     SCHEDULER_TASK_PAUSE_IN_MILLISECONDS("scheduler.task.pauseInMilliseconds", "SCHEDULER_TASK_PAUSE_IN_MILLISECONDS"),

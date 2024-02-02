@@ -5,6 +5,6 @@ import arenadata.domain.aggregate.CryptoCurrency;
 
 import java.util.Collection;
 
-public interface QuoteBinder {
+public interface CryptoBinder {
     Collection<CryptoCurrency> bind(String responseBody) throws ResponseBindingException;
 }

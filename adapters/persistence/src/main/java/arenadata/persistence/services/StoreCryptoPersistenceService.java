@@ -6,13 +6,15 @@ import arenadata.common.exceptions.AdapterException;
 import arenadata.domain.aggregate.CryptoCurrency;
 import arenadata.persistence.client.PersistenceClient;
 import arenadata.persistence.config.PersistenceConfig;
-import arenadata.persistence.exceptions.PersistenceException;
+import arenadata.persistence.exceptions.StorePersistenceException;
 import co.elastic.clients.elasticsearch.core.IndexRequest;
 
 import java.lang.System.Logger;
 import java.util.Collection;
 import java.util.Optional;
-
+/**
+ * Implementation of {@link StoreCryptoPersistencePort} responsible for storing CryptoCurrency data in elasticsearch persistent storage.
+ */
 public class StoreCryptoPersistenceService implements StoreCryptoPersistencePort {
     private final static Logger logger = System.getLogger(StoreCryptoPersistencePort.class.getName());
     private final LoadCryptoPersistencePort loadCryptoPort;
@@ -24,7 +26,12 @@ public class StoreCryptoPersistenceService implements StoreCryptoPersistencePort
         this.client = client;
         this.loadCryptoPort = loadCryptoPort;
     }
-
+    /**
+     * Stores a collection of CryptoCurrency objects in persistent storage.
+     *
+     * @param currencyCollection The collection of CryptoCurrency objects to be stored.
+     * @throws StorePersistenceException If an error occurs during the storing process.
+     */
     @Override
     public void store(Collection<CryptoCurrency> currencyCollection) throws AdapterException {
         try {
@@ -51,15 +58,13 @@ public class StoreCryptoPersistenceService implements StoreCryptoPersistencePort
                 this.client.getInstance().index(request);
             }
         } catch (Exception e){
-            logger.log(Logger.Level.ERROR,"Exception during storing cryptocurrency.");
+            logger.log(Logger.Level.ERROR,"Error occurred while storing CryptoCurrency to persistent storage.");
 
             logger.log(Logger.Level.INFO, "Persistence client connection check.");
 
             client.verifyConnection();
 
-            throw new PersistenceException(e.getMessage());
+            throw new StorePersistenceException(e.getMessage());
         }
     }
-
-
 }

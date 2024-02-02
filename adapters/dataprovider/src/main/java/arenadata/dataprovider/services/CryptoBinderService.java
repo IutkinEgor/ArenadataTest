@@ -13,12 +13,12 @@ import java.util.*;
 import java.lang.System.Logger;
 
 
-public class QuoteBinderService implements QuoteBinder {
-    private final Logger logger = System.getLogger(QuoteBinderService.class.getName());
+public class CryptoBinderService implements CryptoBinder {
+    private final Logger logger = System.getLogger(CryptoBinderService.class.getName());
     private final DateTimeFormatter formatter;
     private final ObjectMapper mapper;
 
-    public QuoteBinderService() {
+    public CryptoBinderService() {
         this.formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         this.mapper = new ObjectMapper();
     }

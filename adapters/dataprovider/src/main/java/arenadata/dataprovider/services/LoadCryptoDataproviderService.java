@@ -1,8 +1,6 @@
 package arenadata.dataprovider.services;
 
 import arenadata.application._output.LoadCryptoDataproviderPort;
-import arenadata.application._output.LoadCryptoPersistencePort;
-import arenadata.common.exceptions.AdapterException;
 import arenadata.dataprovider.config.DataProviderConfig;
 import arenadata.dataprovider.exceptions.*;
 import arenadata.domain.aggregate.CryptoCurrency;
@@ -21,9 +19,9 @@ public class LoadCryptoDataproviderService implements LoadCryptoDataproviderPort
     private static final Logger logger = System.getLogger(LoadCryptoDataproviderService.class.getSimpleName());
     private final DataProviderConfig config;
     private final HttpClient client;
-    private final QuoteBinder binder;
+    private final CryptoBinder binder;
 
-    public LoadCryptoDataproviderService(DataProviderConfig config, HttpClient client, QuoteBinder binder) {
+    public LoadCryptoDataproviderService(DataProviderConfig config, HttpClient client, CryptoBinder binder) {
         this.config = config;
         this.client = client;
         this.binder = binder;
@@ -36,7 +34,7 @@ public class LoadCryptoDataproviderService implements LoadCryptoDataproviderPort
             validateResponse(response);
             return binder.bind(response.body());
         }catch (Exception e){
-           throw new LoadQuoteException(e.getMessage());
+           throw new LoadCryptoException(e.getMessage());
         }
     }
 

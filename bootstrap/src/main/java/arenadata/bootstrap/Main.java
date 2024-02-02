@@ -20,7 +20,7 @@ import arenadata.bootstrap.properties.FilePropertiesResolver;
 import arenadata.bootstrap.properties.PropertiesResolver;
 import arenadata.dataprovider.config.DataProviderConfig;
 import arenadata.dataprovider.services.LoadCryptoDataproviderService;
-import arenadata.dataprovider.services.QuoteBinderService;
+import arenadata.dataprovider.services.CryptoBinderService;
 import arenadata.persistence.client.PersistenceClient;
 import arenadata.persistence.client.PersistenceClientImpl;
 import arenadata.persistence.config.PersistenceConfig;
@@ -104,7 +104,7 @@ public class Main {
         PersistenceConfig persistenceConfig = application.getBean(PersistenceConfig.class);
         PersistenceClient persistenceClient = application.getBean(PersistenceClient.class);
 
-        LoadCryptoDataproviderPort loadCryptoDataproviderPort = new LoadCryptoDataproviderService(application.getBean(DataProviderConfig.class), application.getBean(HttpClient.class), new QuoteBinderService());
+        LoadCryptoDataproviderPort loadCryptoDataproviderPort = new LoadCryptoDataproviderService(application.getBean(DataProviderConfig.class), application.getBean(HttpClient.class), new CryptoBinderService());
         LoadCryptoPersistencePort loadCryptoPersistencePort = new LoadCryptoPersistenceService(persistenceConfig,persistenceClient);
         StoreCryptoPersistencePort storeCryptoPersistencePort = new StoreCryptoPersistenceService(persistenceConfig,persistenceClient,loadCryptoPersistencePort);
 
