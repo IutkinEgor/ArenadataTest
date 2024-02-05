@@ -1,5 +1,9 @@
 package arenadata.bootstrap;
 
+import arenadata.api.config.APIConfig;
+import arenadata.api.controllers.CryptocurrencyController;
+import arenadata.api.server.AppServer;
+import arenadata.api.server.AppServerImpl;
 import arenadata.application._input.FetchAndStoreQuoteUseCase;
 import arenadata.application._input.ManageSchedulerUseCase;
 import arenadata.application._input.StartUseCase;
@@ -12,23 +16,31 @@ import arenadata.application.interactors.FetchAndStoreQuoteInteractor;
 import arenadata.application.interactors.ManageSchedulerInteractor;
 import arenadata.application.interactors.StartInteractor;
 import arenadata.application.interactors.StopInteractor;
+import arenadata.bootstrap.config.ApiConfigResolver;
 import arenadata.bootstrap.config.ApplicationConfigResolver;
 import arenadata.bootstrap.config.DataProviderConfigResolver;
 import arenadata.bootstrap.config.PersistenceConfigResolver;
+import arenadata.bootstrap.mapper.LocalDateTimeDeserializer;
+import arenadata.bootstrap.mapper.LocalDateTimeSerializer;
 import arenadata.bootstrap.properties.EnvPropertiesResolver;
 import arenadata.bootstrap.properties.FilePropertiesResolver;
 import arenadata.bootstrap.properties.PropertiesResolver;
 import arenadata.dataprovider.config.DataProviderConfig;
-import arenadata.dataprovider.services.LoadCryptoDataproviderService;
 import arenadata.dataprovider.services.CryptoBinderService;
+import arenadata.dataprovider.services.LoadCryptoDataproviderService;
 import arenadata.persistence.client.PersistenceClient;
 import arenadata.persistence.client.PersistenceClientImpl;
 import arenadata.persistence.config.PersistenceConfig;
 import arenadata.persistence.services.LoadCryptoPersistenceService;
 import arenadata.persistence.services.StoreCryptoPersistenceService;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.lang.System.Logger;
 import java.net.http.HttpClient;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 
@@ -48,20 +60,29 @@ public class Main {
             shutdownHookInit();
             propertiesInit(args);
             configInit();
+            jsonMapperInit();
             httpClientInit();
+            httpServerInit();
             applicationPortInit();
             applicationUseCaseInit();
+            apiControllerInit();
+
             logger.log(Logger.Level.INFO, "Application bootstrap completed.");
 
             // Retrieve the StartUseCase bean and initiate the application process
             StartUseCase startUseCase = application.getBean(StartUseCase.class);
             startUseCase.start();
 
+            // Start API adapter
+            AppServer appServer = application.getBean(AppServer.class);
+            appServer.start();
+
         } catch (Exception e){
             logger.log(Logger.Level.ERROR, "Error accused while executing runtime. Application terminated started. Message: "+ e.getMessage());
             System.exit(-1);
         }
     }
+
     /**
      * Initializes properties source based on command-line arguments.
      *
@@ -81,19 +102,43 @@ public class Main {
         ApplicationConfig applicationConfig = new ApplicationConfigResolver().resolve(propertiesResolver);
         PersistenceConfig persistenceConfig = new PersistenceConfigResolver().resolve(propertiesResolver);
         DataProviderConfig dataProviderConfig = new DataProviderConfigResolver().resolve(propertiesResolver);
+        APIConfig apiConfig = new ApiConfigResolver().resolve(propertiesResolver);
 
         application.addBean(ApplicationConfig.class,applicationConfig);
         application.addBean(PersistenceConfig.class, persistenceConfig);
         application.addBean(DataProviderConfig.class,dataProviderConfig);
+        application.addBean(APIConfig.class,apiConfig);
+    }
+    /**
+     * Initializes {@link ObjectMapper} configuration components.
+     */
+    private static void jsonMapperInit() {
+        ObjectMapper objectMapper = new ObjectMapper()
+                .configure(SerializationFeature.INDENT_OUTPUT, false)
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addSerializer(LocalDateTime.class,new LocalDateTimeSerializer(LocalDateTime.class));
+        simpleModule.addDeserializer(LocalDateTime.class,new LocalDateTimeDeserializer(LocalDateTime.class));
+        objectMapper.registerModule(simpleModule);
+
+        application.addBean(ObjectMapper.class,objectMapper);
     }
     /**
      * Initializes the HTTP client component of the application.
      */
     private static void httpClientInit(){
-        PersistenceClient persistenceClient = new PersistenceClientImpl(application.getBean(PersistenceConfig.class));
+        PersistenceClient persistenceClient = new PersistenceClientImpl(application.getBean(PersistenceConfig.class),application.getBean(ObjectMapper.class));
 
         application.addBean(PersistenceClient.class,persistenceClient);
         application.addBean(HttpClient.class,HttpClient.newHttpClient());
+    }
+    /**
+     * Initializes the HTTP Server component of the application.
+     */
+    private static void httpServerInit(){
+        AppServer appServer = new AppServerImpl(application.getBean(APIConfig.class),Executors.newVirtualThreadPerTaskExecutor());
+        application.addBean(AppServer.class,appServer);
     }
 
     /**
@@ -133,6 +178,16 @@ public class Main {
 
         application.addBean(StopUseCase.class, new StopInteractor(
                 application.getBean(ManageSchedulerUseCase.class)));
+    }
+
+    /**
+     * Initializes REST Controllers of the API adapter module.
+     */
+    private static void apiControllerInit(){
+        AppServer appServer = application.getBean(AppServer.class);
+        ObjectMapper mapper = application.getBean(ObjectMapper.class);
+
+        appServer.registerController(new CryptocurrencyController(mapper));
     }
 
 

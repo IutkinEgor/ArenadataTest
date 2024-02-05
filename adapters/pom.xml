@@ -13,6 +13,7 @@
     <modules>
         <module>persistence</module>
         <module>dataprovider</module>
+        <module>api</module>
     </modules>
 
 </project>

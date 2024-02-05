@@ -9,10 +9,7 @@ import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 
@@ -29,10 +26,10 @@ public class PersistenceClientImpl implements PersistenceClient {
     private final ElasticsearchTransport elcTransport;
     private final ElasticsearchClient elcClient;
 
-    public PersistenceClientImpl(PersistenceConfig config) {
+    public PersistenceClientImpl(PersistenceConfig config, ObjectMapper mapper) {
         this.config = config;
         this.restClient = buildRestClient(this.config);
-        this.elcTransport = buildElcTransport(this.restClient);
+        this.elcTransport = buildElcTransport(this.restClient,mapper);
         this.elcClient = buildElcClient(this.elcTransport);
         verifyConnection();
         createIndexIfNotExist();
@@ -44,19 +41,10 @@ public class PersistenceClientImpl implements PersistenceClient {
                 .build();
     }
 
-    private ElasticsearchTransport buildElcTransport(RestClient restClient){
-
-        ObjectMapper objectMapper = new ObjectMapper()
-                .configure(SerializationFeature.INDENT_OUTPUT, false)
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-        // Serializer for LocalDateTime object.
-        objectMapper.registerModule(new JavaTimeModule());
-
-        JacksonJsonpMapper mapper = new JacksonJsonpMapper(objectMapper);
-
+    private ElasticsearchTransport buildElcTransport(RestClient restClient, ObjectMapper objectMapper){
+        JacksonJsonpMapper jacksonJsonpMapper = new JacksonJsonpMapper(objectMapper);
         // Create the transport with a Jackson mapper
-        return new RestClientTransport(restClient, mapper);
+        return new RestClientTransport(restClient, jacksonJsonpMapper);
     }
 
     private ElasticsearchClient buildElcClient(ElasticsearchTransport transport){

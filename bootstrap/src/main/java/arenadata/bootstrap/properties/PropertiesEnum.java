@@ -14,7 +14,9 @@ public enum PropertiesEnum {
     DATAPROVIDER_API_KEYS("dataprovider.api.keys","DATA_PROVIDER_API_KEYS"),
     DATAPROVIDER_REQUEST_TIMEOUT("dataprovider.requestTimeoutInMilliseconds","DATAPROVIDER_REQUEST_TIMEOUT_IN_MILLISECONDS"),
     PERSISTENCE_DOMAIN("persistence.domain","PERSISTENCE_DOMAIN"),
-    PERSISTENCE_INDEX_NAME("persistence.indexName","PERSISTENCE_INDEX_NAME");
+    PERSISTENCE_INDEX_NAME("persistence.indexName","PERSISTENCE_INDEX_NAME"),
+    API_ADDRESS("api.address","API_ADDRESS"),
+    API_PORT("api.port","API_PORT");
 
     private final String file;
     private final String env;
