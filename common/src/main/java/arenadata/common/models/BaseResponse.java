@@ -24,16 +24,16 @@ public class BaseResponse<Data> implements Serializable {
         public static BaseResponse<String> success(){
             return new BaseResponse<>(true, null, null, 200);
         }
-        public static BaseResponse<String> failure(){
+        public static BaseResponse failure(){
             return new BaseResponse<>(false, FAILURE_DEFAULT_MESSAGE, null,400);
         }
-        public static BaseResponse<String> failure(int code){
+        public static BaseResponse failure(int code){
             return new BaseResponse<>(false, FAILURE_DEFAULT_MESSAGE, null,code);
         }
-        public static BaseResponse<String> failure(String message){
+        public static BaseResponse failure(String message){
         return new BaseResponse<>(false, message, null,400);
         }
-        public static BaseResponse<String> failure(String message, int code){
+        public static BaseResponse failure(String message, int code){
             return new BaseResponse<>(false, message, null,code);
         }
         public long getCreatedAt() {

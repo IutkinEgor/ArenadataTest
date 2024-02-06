@@ -1,21 +1,16 @@
 package arenadata.bootstrap;
 
 import arenadata.api.config.APIConfig;
-import arenadata.api.controllers.CryptocurrencyController;
+import arenadata.api.controllers.AveragePriceWithinAHourController;
+import arenadata.api.controllers.MaximumPriceChangeController;
 import arenadata.api.server.AppServer;
 import arenadata.api.server.AppServerImpl;
-import arenadata.application._input.FetchAndStoreQuoteUseCase;
-import arenadata.application._input.ManageSchedulerUseCase;
-import arenadata.application._input.StartUseCase;
-import arenadata.application._input.StopUseCase;
+import arenadata.application._input.*;
 import arenadata.application._output.LoadCryptoDataproviderPort;
 import arenadata.application._output.LoadCryptoPersistencePort;
 import arenadata.application._output.StoreCryptoPersistencePort;
 import arenadata.application.config.ApplicationConfig;
-import arenadata.application.interactors.FetchAndStoreQuoteInteractor;
-import arenadata.application.interactors.ManageSchedulerInteractor;
-import arenadata.application.interactors.StartInteractor;
-import arenadata.application.interactors.StopInteractor;
+import arenadata.application.interactors.*;
 import arenadata.bootstrap.config.ApiConfigResolver;
 import arenadata.bootstrap.config.ApplicationConfigResolver;
 import arenadata.bootstrap.config.DataProviderConfigResolver;
@@ -169,15 +164,20 @@ public class Main {
                 application.getBean(LoadCryptoDataproviderPort.class),
                 application.getBean(StoreCryptoPersistencePort.class)
         ));
-
         application.addBean(StartUseCase.class,new StartInteractor(
                 application.getBean(ApplicationConfig.class),
                 application.getBean(ManageSchedulerUseCase.class),
                 application.getBean(FetchAndStoreQuoteUseCase.class)
         ));
-
         application.addBean(StopUseCase.class, new StopInteractor(
-                application.getBean(ManageSchedulerUseCase.class)));
+                application.getBean(ManageSchedulerUseCase.class)
+        ));
+        application.addBean(AveragePriceWithinAHourUseCase.class, new AveragePriceWithinAHourInteractor(
+                application.getBean(LoadCryptoPersistencePort.class)
+        ));
+        application.addBean(MaximumPriceChangeUseCase.class, new MaximumPriceChangeInteractor(
+                application.getBean(LoadCryptoPersistencePort.class)
+        ));
     }
 
     /**
@@ -187,7 +187,8 @@ public class Main {
         AppServer appServer = application.getBean(AppServer.class);
         ObjectMapper mapper = application.getBean(ObjectMapper.class);
 
-        appServer.registerController(new CryptocurrencyController(mapper));
+        appServer.registerController(new AveragePriceWithinAHourController(mapper,application.getBean(AveragePriceWithinAHourUseCase.class)));
+        appServer.registerController(new MaximumPriceChangeController(mapper,application.getBean(MaximumPriceChangeUseCase.class)));
     }
 
 

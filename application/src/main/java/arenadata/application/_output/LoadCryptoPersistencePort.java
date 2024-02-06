@@ -4,6 +4,7 @@ import arenadata.common.exceptions.AdapterException;
 import arenadata.domain.aggregate.CryptoCurrency;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,5 +15,8 @@ import java.util.Optional;
  *
  */
 public interface LoadCryptoPersistencePort {
+
+    List<CryptoCurrency> loadAll() throws AdapterException;
     Optional<CryptoCurrency> loadById(String id) throws AdapterException;
+    Optional<CryptoCurrency> loadBySymbol(String symbol) throws AdapterException;
 }

@@ -18,7 +18,7 @@ public class Interactor {
         return BaseResponse.failure();
     }
 
-    protected BaseResponse<String> onRequestFailure(Exception e) {
+    protected <T> BaseResponse<T> onRequestFailure(Exception e) {
         if (e instanceof ApplicationException) {
             return BaseResponse.failure(e.getMessage());
         }
