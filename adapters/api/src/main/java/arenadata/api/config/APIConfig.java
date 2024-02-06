@@ -1,8 +1,6 @@
 package arenadata.api.config;
 
 import arenadata.common.exceptions.ValidationException;
-
-import java.net.URL;
 /**
  * {@link  APIConfig} represents the configuration settings for the API adapter,
  * specifically for Http Server.
@@ -23,7 +21,7 @@ public record APIConfig(String address, Integer port) {
 
     private void validateAddress(String address) throws ValidationException {
         try {
-
+            //TODO IP validation
         } catch (Exception e){
             throw new ValidationException("Server address is not match URL pattern. Provided value: " + address);
         }

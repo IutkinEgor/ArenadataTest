@@ -7,7 +7,9 @@ import com.sun.net.httpserver.HttpServer;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executor;
-
+/**
+ * Implementation of the {@link AppServer} interface.
+ */
 public class AppServerImpl implements AppServer{
     private final HttpServer server;
 

@@ -201,10 +201,15 @@ public class Main {
                 if(client != null) {
                     client.closeConnection();
                 }
+                AppServer appServer = application.getBean(AppServer.class);
+                if (appServer != null){
+                    appServer.stop();
+                }
                 StopUseCase stopUseCase = application.getBean(StopUseCase.class);
                 if(stopUseCase != null){
                     stopUseCase.stop();
                 }
+
             } catch (Exception e){
                 logger.log(Logger.Level.ERROR,"Error accused during executing application shutdown hook. Message: " + e.getMessage());
             } finally {

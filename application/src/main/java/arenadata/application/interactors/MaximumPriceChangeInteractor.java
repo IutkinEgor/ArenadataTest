@@ -11,7 +11,10 @@ import arenadata.domain.valueObject.Quote;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.SortedSet;
-
+/**
+ * Implementation of the {@link MaximumPriceChangeUseCase} interface.
+ * Extends the {@link Interactor} class for common functionality.
+ */
 public class MaximumPriceChangeInteractor extends Interactor implements MaximumPriceChangeUseCase {
 
     private final LoadCryptoPersistencePort loadCryptoPersistencePort;
@@ -24,15 +27,33 @@ public class MaximumPriceChangeInteractor extends Interactor implements MaximumP
     public BaseResponse<Response> calculate() {
         try {
             List<CryptoCurrency> currencyList = loadCryptoPersistencePort.loadAll();
-
+            LocalDateTime actualDate = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
             String symbolWithMaxChange = "";
             double maxChangePercentage = Double.MIN_VALUE;
+            Quote todayLastQuote = null;
+            Quote yesterdayLastQuote = null;
 
             for (CryptoCurrency currency : currencyList) {
-                double changePercentage = calculateMaxPriceChangePercentage(currency);
+                // Skip cryptocurrencies with insufficient historical data
+                if (currency.quoteHistory().size() < 2) {
+                    continue;
+                }
+                // Get the latest quote for today
+                Quote today = currency.quoteHistory().getLast();
+                // Find the last quote from yesterday
+                Quote yesterday = findPreviousDayLastQuote(currency.quoteHistory(), today.date());
+                // Skip if yesterday's data is missing or last quote is not today
+                if(yesterday == null || !today.date().isAfter(actualDate)){
+                    continue;
+                }
+                // Calculate the price change percentage between yesterday and today
+                double changePercentage = calculateMaxPriceChangePercentage(today,yesterday);
+                // Update the maximum change percentage if applicable
                 if (Math.abs(changePercentage) > Math.abs(maxChangePercentage) && changePercentage != Double.MIN_VALUE) {
                     maxChangePercentage = changePercentage;
                     symbolWithMaxChange = currency.symbol();
+                    todayLastQuote = today;
+                    yesterdayLastQuote = yesterday;
                 }
             }
 
@@ -40,34 +61,16 @@ public class MaximumPriceChangeInteractor extends Interactor implements MaximumP
                 throw new MaximumChangeCalculationException("Not enough historical data for comparison. Try next day.");
             }
 
-            return onRequestSuccess(new MaximumPriceChangeUseCase.Response(symbolWithMaxChange,maxChangePercentage));
+            return onRequestSuccess(new MaximumPriceChangeUseCase.Response(symbolWithMaxChange,maxChangePercentage,todayLastQuote,yesterdayLastQuote));
         } catch (Exception e){
             return onRequestFailure(e);
         }
     }
 
-    private static double calculateMaxPriceChangePercentage(CryptoCurrency currency) {
-        SortedSet<Quote> quoteHistory = currency.quoteHistory();
-
-        if (quoteHistory.size() < 2) {
-            // Not enough quotes for comparison
-            return Double.MIN_VALUE;
-        }
-
-        // Find the last quote and the last quote of the previous day
-        Quote lastQuote = quoteHistory.getLast();
-        Quote previousDayLastQuote = findPreviousDayLastQuote(quoteHistory, lastQuote.date());
-
-        if (previousDayLastQuote == null) {
-            // No quote from the previous day
-            return Double.MIN_VALUE;
-        }
-
+    private static double calculateMaxPriceChangePercentage(Quote today, Quote yesterday) {
         // Calculate the price change percentage
-        double priceChange = lastQuote.price() - previousDayLastQuote.price();
-        double percentageChange = (priceChange / previousDayLastQuote.price()) * 100.0;
-
-        return percentageChange;
+        double priceChange = today.price() - yesterday.price();
+        return (priceChange / yesterday.price()) * 100.0;
     }
 
     private static Quote findPreviousDayLastQuote(SortedSet<Quote> sortedList, LocalDateTime currentDate) {

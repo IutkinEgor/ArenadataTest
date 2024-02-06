@@ -6,7 +6,6 @@ import arenadata.domain.aggregate.CryptoCurrency;
 import arenadata.persistence.client.PersistenceClient;
 import arenadata.persistence.config.PersistenceConfig;
 import arenadata.persistence.exceptions.LoadPersistenceException;
-import co.elastic.clients.elasticsearch._types.mapping.SizeField;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.CountResponse;
 import co.elastic.clients.elasticsearch.core.GetResponse;
@@ -31,7 +30,12 @@ public class LoadCryptoPersistenceService implements LoadCryptoPersistencePort {
         this.config = config;
         this.client = client;
     }
-
+    /**
+     * Loads all cryptocurrency data from persistent storage.
+     *
+     * @return An {@link List} containing the loaded {@link CryptoCurrency}'s, or empty if not found.
+     * @throws LoadPersistenceException If an error occurs during the loading process.
+     */
     @Override
     public List<CryptoCurrency> loadAll() throws AdapterException {
         try {
@@ -97,7 +101,13 @@ public class LoadCryptoPersistenceService implements LoadCryptoPersistencePort {
             throw new LoadPersistenceException(e.getMessage());
         }
     }
-
+    /**
+     * Loads cryptocurrency data from persistent storage based on the provided symbol.
+     *
+     * @param symbol The id of the {@link CryptoCurrency} to be loaded.
+     * @return An {@link Optional} containing the loaded {@link CryptoCurrency} if found, or empty if not found.
+     * @throws LoadPersistenceException If an error occurs during the loading process.
+     */
     @Override
     public Optional<CryptoCurrency> loadBySymbol(String symbol) throws AdapterException {
         try {

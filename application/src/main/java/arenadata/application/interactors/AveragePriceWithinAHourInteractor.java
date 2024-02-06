@@ -10,6 +10,10 @@ import arenadata.domain.valueObject.Quote;
 
 import java.util.Optional;
 
+/**
+ * Implementation of the {@link AveragePriceWithinAHourUseCase} interface.
+ * Extends the {@link Interactor} class for common functionality.
+ */
 public class AveragePriceWithinAHourInteractor extends Interactor implements AveragePriceWithinAHourUseCase {
 
     private final LoadCryptoPersistencePort loadCryptoPersistencePort;
@@ -36,6 +40,4 @@ public class AveragePriceWithinAHourInteractor extends Interactor implements Ave
         return currency.quoteHistory().stream()
                 .filter( quote -> quote.date().isAfter(lastQuote.date().minusHours(1))).mapToDouble(Quote::price).average().orElse(0.0);
     }
-
-
 }
