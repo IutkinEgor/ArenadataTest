@@ -94,6 +94,7 @@ public class PersistenceClientImpl implements PersistenceClient {
      */
     @Override
     public void closeConnection() throws IOException {
+       this.logger.log(Logger.Level.INFO, "Close connection to the Elasticsearch");
        elcTransport.close();
     }
 }
