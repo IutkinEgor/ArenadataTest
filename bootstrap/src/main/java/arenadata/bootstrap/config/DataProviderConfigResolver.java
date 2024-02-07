@@ -24,13 +24,13 @@ public class DataProviderConfigResolver implements ConfigResolver<DataProviderCo
 
         Optional<String> domain = propertiesResolver.getProperties(PropertiesEnum.DATAPROVIDER_DOMAIN);
         Optional<String> path = propertiesResolver.getProperties(PropertiesEnum.DATAPROVIDER_PATH);
-        Optional<String> requestTimout = propertiesResolver.getProperties(PropertiesEnum.DATAPROVIDER_REQUEST_TIMEOUT);
+        Optional<String> requestTimout = propertiesResolver.getProperties(PropertiesEnum.DATAPROVIDER_REQUEST_TIMEOUT_IN_MILLISECONDS);
         Optional<String> apiHeader = propertiesResolver.getProperties(PropertiesEnum.DATAPROVIDER_API_HEADER);
         Optional<String> apiKeys = propertiesResolver.getProperties(PropertiesEnum.DATAPROVIDER_API_KEYS);
-
         if(domain.isEmpty() || path.isEmpty() || requestTimout.isEmpty()|| apiKeys.isEmpty()) {
             throw new LoadConfigException("\"Failed to bind dataprovider properties to '" + DataProviderConfig.class.getSimpleName()  + "' object due to compatibility issue. Check environment variables or properties file.\";");
         }
+
 
         return new DataProviderConfig(domain.get(), path.get(), apiHeader.get(), new LinkedList<>(Arrays.stream(apiKeys.get().split(",")).collect(Collectors.toList())),Integer.parseInt(requestTimout.get()));
     }
