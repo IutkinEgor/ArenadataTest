@@ -38,6 +38,7 @@ import java.net.http.HttpClient;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * The main class of the application responsible for initializing and bootstrapping the application components.
@@ -156,7 +157,8 @@ public class Main {
      * Initializes use case components of the application.
      */
     private static void applicationUseCaseInit(){
-        application.addBean(ManageSchedulerUseCase.class,new ManageSchedulerInteractor(Executors.newScheduledThreadPool(2)));
+        ThreadFactory factory = Thread.ofVirtual().factory();
+        application.addBean(ManageSchedulerUseCase.class,new ManageSchedulerInteractor(Executors.newScheduledThreadPool(4,factory)));
 
         application.addBean(FetchAndStoreQuoteUseCase.class,new FetchAndStoreQuoteInteractor(
                 application.getBean(ApplicationConfig.class),
